@@ -37,6 +37,10 @@ class cam_scam():
             subprocess.run(['kill', str(pr.pid)], capture_output=True, text=True)
         self.virtual_cam_processes = []
 
+    def __del__(self):
+        for cam in self.physical_cams:
+            cam.release()
+
 if __name__ == "__main__":
     worker = cam_scam()
     # sleep(30)
