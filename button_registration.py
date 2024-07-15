@@ -6,7 +6,7 @@ import sys
 class state_manager():
     def __init__(self, mic_id, audio_file):
         self.__cam_scam = cam_scam()
-        self._mic_scam = MicroScam(mic_id, audio_file)
+        self.__mic_scam = MicroScam(mic_id, audio_file)
         self.__cams_on = True
         print('Video devices ready. Please be careful when choosing!')
 
@@ -23,9 +23,11 @@ class state_manager():
     def change(self):
         if self.__cams_on:
             self.__cam_scam.disconnect_virtual()
+            self.__mic_scam.freeze()
             self.__cams_on = False
         else:
             self.__cam_scam.connect_virtual()
+            self.__mic_scam.unfreeze()
             self.__cams_on = True
 
     def check_key(self, key: Key):
