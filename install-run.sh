@@ -3,6 +3,12 @@ SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 cd $SCRIPTPATH
 printf "$SCRIPTPATH\n"
 
+printf "enter path to audio file"
+read $audio_file
+
+printf "enter mic id"
+read $mic_id
+
 if [ -d "./cam_scam_venv" ]; then
     printf "everything seems installed, running..."
 else
@@ -21,4 +27,4 @@ else
 fi
 
 printf "running app..."
-./cam_scam_venv/bin/python3 button_registration.py > ./logs/logs.log
+./cam_scam_venv/bin/python3 button_registration.py $mic_id $audio_file > ./logs/logs.log

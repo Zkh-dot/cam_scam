@@ -1,10 +1,12 @@
 from pynput.keyboard import Key, Listener
 from cam_connections import cam_scam
-
+from micro import MicroScam
+import sys
 
 class state_manager():
-    def __init__(self):
+    def __init__(self, mic_id, audio_file):
         self.__cam_scam = cam_scam()
+        self._mic_scam = MicroScam(mic_id, audio_file)
         self.__cams_on = True
         print('Video devices ready. Please be careful when choosing!')
 
@@ -40,7 +42,7 @@ class state_manager():
 
 if __name__ == "__main__":
     try:
-        manager = state_manager()
+        manager = state_manager(sys.argv[1], sys.argv[2])
         with Listener(on_press=manager.check_key) as listener:
             listener.join()
     except KeyboardInterrupt:
