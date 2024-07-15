@@ -1,0 +1,2 @@
+opencv_python==4.10.0.84
+pynput==1.7.7
