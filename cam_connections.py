@@ -13,7 +13,6 @@ class cam_scam():
         self.virtual_cam_ids = []
         self.virtual_cam_processes = []
         self.create_virlual()
-        sleep(2)
         self.connect_virtual()
 
     @staticmethod
@@ -46,8 +45,9 @@ class cam_scam():
                 cam.release()
             except:
                 pass
-            
-        subprocess.run(['v4l2loopback-ctl', 'delete', f'/dev/video*'])
+        print('\033[91mPlease enter this command!')
+        print('sudo v4l2loopback-ctl delete /dev/video* ')
+        # subprocess.run(['v4l2loopback-ctl', 'delete', f'/dev/video*'], shell=True)
 
 
 if __name__ == "__main__":
@@ -55,7 +55,6 @@ if __name__ == "__main__":
     # sleep(30)
     # cam_scam.test()
     sleep(20)
-    print('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
     worker.disconnect_virtual()
     # sleep(10)
     # worker.connect_virtual()
