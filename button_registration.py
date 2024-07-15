@@ -10,7 +10,7 @@ class state_manager():
 
     @staticmethod
     def test(key: Key):
-        print(key)
+        print(key.__dict__)
         if(key == Key.f12):
             print('fuck!')
 
@@ -27,9 +27,10 @@ class state_manager():
             self.__cams_on = True
 
     def check_key(self, key: Key):
-        if key.name == 'f12':
+        if "name" in key.__dict__ and key.name == 'f12':
             self.change()
-
+        elif "f12" in key.__dict__:
+            self.change()
 
 if __name__ == "__main__":
     manager = state_manager()
