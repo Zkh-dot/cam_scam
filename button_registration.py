@@ -31,8 +31,17 @@ class state_manager():
             self.change()
         elif "f12" in key.__dict__:
             self.change()
+        elif "_name_" in key.__dict__ and key._name_ == "f12":
+            self.change()
+    
+    def __del__(self):
+        print(1)
+        self.__cam_scam.__del__()
 
 if __name__ == "__main__":
-    manager = state_manager()
-    with Listener(on_press=manager.check_key) as listener:
-        listener.join()
+    try:
+        manager = state_manager()
+        with Listener(on_press=manager.check_key) as listener:
+            listener.join()
+    except KeyboardInterrupt:
+        del manager
