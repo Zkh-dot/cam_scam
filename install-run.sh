@@ -3,11 +3,11 @@ SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 cd $SCRIPTPATH
 printf "$SCRIPTPATH\n"
 
-printf "enter path to audio file"
-read $audio_file
+printf "enter path to audio file\n"
+read audio_file
 
-printf "enter mic id"
-read $mic_id
+printf "enter mic id\n"
+read mic_id
 
 if [ -d "./cam_scam_venv" ]; then
     printf "everything seems installed, running..."
