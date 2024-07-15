@@ -17,6 +17,7 @@ else
     sudo pacman -S gcc
     printf "installing requirements..."
     ./cam_scam_venv/bin/python3 -m pip install -r ./requirements.txt
+    mkdir logs
 fi
 
 printf "running app..."

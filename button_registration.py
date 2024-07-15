@@ -27,11 +27,11 @@ class state_manager():
             self.__cams_on = True
 
     def check_key(self, key: Key):
-        if 'name' in key.__dict__ and key.name == 'f12' or 'f12' in key.__dict__:
+        if key.name == 'f12':
             self.change()
 
 
 if __name__ == "__main__":
     manager = state_manager()
-    with Listener(on_press=state_manager.check_key) as listener:
-        listener.join()             
+    with Listener(on_press=manager.check_key) as listener:
+        listener.join()

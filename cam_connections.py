@@ -40,9 +40,15 @@ class cam_scam():
         self.virtual_cam_processes = []
 
     def __del__(self):
+        self.disconnect_virtual()
         for index, cam in enumerate(self.physical_cams):
-            subprocess.run(['v4l2loopback-ctl', 'delete', f'/dev/video{self.delta + index}'])
-            cam.release()
+            try:
+                cam.release()
+            except:
+                pass
+            
+        subprocess.run(['v4l2loopback-ctl', 'delete', f'/dev/video*'])
+
 
 if __name__ == "__main__":
     worker = cam_scam()
