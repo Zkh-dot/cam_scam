@@ -41,6 +41,7 @@ class state_manager():
     def __del__(self):
         print(1)
         self.__cam_scam.__del__()
+        self.__mic_scam.__del__()
 
 if __name__ == "__main__":
     try:
