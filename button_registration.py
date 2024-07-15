@@ -8,6 +8,12 @@ class state_manager():
         self.__cams_on = True
         print('Video devices ready. Please be careful when choosing!')
 
+    @staticmethod
+    def test(key: Key):
+        print(key)
+        if(key == Key.f12):
+            print('fuck!')
+
     @property
     def cams_on(self):
         return self.__cams_on
@@ -21,11 +27,11 @@ class state_manager():
             self.__cams_on = True
 
     def check_key(self, key: Key):
-        if key.name == 'f12':
+        if 'name' in key.__dict__ and key.name == 'f12' or 'f12' in key.__dict__:
             self.change()
 
 
 if __name__ == "__main__":
     manager = state_manager()
-    with Listener(on_press=manager.check_key) as listener:
-        listener.join()
+    with Listener(on_press=state_manager.check_key) as listener:
+        listener.join()             

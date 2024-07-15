@@ -1,18 +1,9 @@
 import cv2 
 import subprocess
+import glob
 
 def all_cameras_objects() -> list:
-    index = 0
-    arr = []
-    while True:
-        cap = cv2.VideoCapture(index)
-        if not cap.read()[0]:
-            break
-        else:
-            arr.append(index)
-        cap.release()
-        index += 1
-    return arr
+    return glob.glob('/dev/video*')
 
 def get_picture(cam, index):
     ret, frame = cam.read()

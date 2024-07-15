@@ -5,6 +5,8 @@ from time import sleep
 
 class cam_scam():
     def __init__(self):
+        print(['sudo', 'modprobe', 'v4l2loopback', f'devices=0'])
+        subprocess.run(['sudo','modprobe', 'v4l2loopback', f'devices=0'], capture_output=True,text=True)#{','.join(self.virtual_cam_ids)}'])
         self.physical_cams = all_cameras_objects()
         self.delta = len(self.physical_cams)
         print('delta ----->', self.delta)
@@ -23,8 +25,8 @@ class cam_scam():
 
     def create_virlual(self):
         self.virtual_cam_ids = [str(x) for x in range(self.delta, self.delta * 2)]
-        print(['sudo', 'modprobe', 'v4l2loopback', f'devices={self.delta}'])
-        subprocess.run(['sudo','modprobe', 'v4l2loopback', f'devices={self.delta}'], capture_output=True,text=True)#{','.join(self.virtual_cam_ids)}'])
+        for id in self.virtual_cam_ids:
+            subprocess.run(['sudo', 'v4l2loopback-ctl', 'add', f'video{id}'])
 
     def connect_virtual(self):
         for i in range(self.delta):
@@ -38,7 +40,8 @@ class cam_scam():
         self.virtual_cam_processes = []
 
     def __del__(self):
-        for cam in self.physical_cams:
+        for index, cam in enumerate(self.physical_cams):
+            subprocess.run(['v4l2loopback-ctl', 'delete', f'/dev/video{self.delta + index}'])
             cam.release()
 
 if __name__ == "__main__":

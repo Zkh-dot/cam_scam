@@ -10,10 +10,11 @@ else
     # read -p "waiting for any key to continue\n"
     printf "installing headers..."
     sudo pamac install $(pamac list --quiet --installed | grep "^linux[0-9]*[-rt]*$" | awk '{print $1"-headers"}' ORS=' ')
-
+    pacman -S v4l2loopback-dkms v4l2loopback-utils  
     v4l2-ctl --list-devices
     printf "creating venv..."
     python3 -m venv ./cam_scam_venv
+    sudo pacman -S gcc
     printf "installing requirements..."
     ./cam_scam_venv/bin/python3 -m pip install -r ./requirements.txt
 fi
