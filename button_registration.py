@@ -31,11 +31,11 @@ class state_manager():
             self.__cams_on = True
 
     def check_key(self, key: Key):
-        if "name" in key.__dict__ and key.name == 'f12':
+        if "name" in key.__dict__ and key.name == 'f9':
             self.change()
-        elif "f12" in key.__dict__:
+        elif "f9" in key.__dict__:
             self.change()
-        elif "_name_" in key.__dict__ and key._name_ == "f12":
+        elif "_name_" in key.__dict__ and key._name_ == "f9":
             self.change()
     
     def __del__(self):
