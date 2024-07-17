@@ -4,8 +4,9 @@ import random
 from multiprocessing import Process
 import subprocess
 from time import sleep
+from devices_class import devices
 
-class MicroScam:
+class MicroScam(devices):
 	def __init__(self, micid, noiseFile):
 		self.micid = micid
 		self.virtualname = 'Virtual' + ''.join(random.choices(string.ascii_uppercase, k=5))
