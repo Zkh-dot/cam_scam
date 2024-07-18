@@ -1,6 +1,12 @@
 class devices:
-    def freeze():
+    def freeze(self):
         pass
 
-    def unfreeze():
+    def unfreeze(self):
         pass
+
+    def __del__(self):
+        pass
+
+    def release(self):
+        self.__del__()

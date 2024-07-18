@@ -46,10 +46,13 @@ class state_manager():
             self.change()
         elif "_name_" in key.__dict__ and key._name_ == self.__button:
             self.change()
+
+    def release(self):
+        self.__del__()
     
     def __del__(self):
         for key in self.__devices:
-            del self.__devices[key]
+            self.__devices[key].release()
 
 
 if __name__ == "__main__":
@@ -58,4 +61,7 @@ if __name__ == "__main__":
         with Listener(on_press=manager.check_key) as listener:
             listener.join()
     except KeyboardInterrupt:
-        del manager
+        print("exiting...")
+        manager.release()
+    except Exception as e:
+        print(e)
