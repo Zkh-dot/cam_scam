@@ -1,4 +1,3 @@
-# Author: Alexey Slokva <Alesha72003@ya.ru>
 import os
 import string
 import random
