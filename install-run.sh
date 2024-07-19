@@ -54,6 +54,7 @@ while getopts 'irb:a:m:o:' OPTION; do
     e) 
       echo "not stable features enabled"
       experiment=true
+      ;;
     ?)
       printf "script usage: install-run.sh \n\t[-i] for installation \n\t[-r] for run\n\t[-e] to install version with not stable features\n\t[-b button] to set button\n\t[-a path] to set audo file\n\t[-m id] to set mic id\n\t[-o mic/video] to work only with mic or video\n" >&2
       exit 1
@@ -97,6 +98,7 @@ else
     printf "installing requirements..."
     ./cam_scam_venv/bin/python3 -m pip install -r ./requirements.txt
     if [ $experiment == true ]; then
-      ./cam_scam_venv/bin/python3 -m pip install -r ./optional.txt;
+      ./cam_scam_venv/bin/python3 -m pip install -r ./optional.txt
+    fi
     mkdir logs
 fi
