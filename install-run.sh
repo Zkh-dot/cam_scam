@@ -86,6 +86,7 @@ else
     printf "creating venv..."
     if ["$pack_manager" == "apt-get install"]; then
       sudo $pack_manager python3.$(python3 -c 'import sys;print(sys.version_info[:][1])')
+    fi
     python3 -m venv ./cam_scam_venv
     sudo $pack_manager gcc
     printf "installing requirements..."
