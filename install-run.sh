@@ -85,7 +85,7 @@ else
     v4l2-ctl --list-devices
     printf "creating venv..."
     if ["$pack_manager" == "apt-get install"]; then
-      sudo $pack_manager python3.$(python3 -c 'import sys;print(sys.version_info[:][1])')
+      sudo $pack_manager python3.$(python3 -c 'import sys;print(sys.version_info[:][1])')-venv
     fi
     python3 -m venv ./cam_scam_venv
     sudo $pack_manager gcc
