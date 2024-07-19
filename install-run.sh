@@ -6,6 +6,7 @@ cd $SCRIPTPATH
 
 # default values
 install_flag=false
+experiment=false
 button="f12"
 only="all"
 
@@ -50,8 +51,11 @@ while getopts 'irb:a:m:o:' OPTION; do
       echo "only $OPTARG"
       only="$OPTARG"
       ;;
+    e) 
+      echo "not stable features enabled"
+      experiment=true
     ?)
-      printf "script usage: install-run.sh \n\t[-i] for installation \n\t[-r] for run\n\t[-b button] to set button\n\t[-a path] to set audo file\n\t[-m id] to set mic id\n\t[-o mic/video] to work only with mic or video\n" >&2
+      printf "script usage: install-run.sh \n\t[-i] for installation \n\t[-r] for run\n\t[-e] to install version with not stable features\n\t[-b button] to set button\n\t[-a path] to set audo file\n\t[-m id] to set mic id\n\t[-o mic/video] to work only with mic or video\n" >&2
       exit 1
       ;;
   esac
@@ -84,13 +88,15 @@ else
     $pack_manager v4l2loopback-dkms v4l2loopback-utils  
     v4l2-ctl --list-devices
     printf "creating venv..."
-    if [ "$pack_manager" == "apt-get install" ]; then
+    if ["$pack_manager" == "apt-get install"]; then
       sudo $pack_manager python3.$(python3 -c 'import sys;print(sys.version_info[:][1])')-venv
-      # sudo $pack_manager python3-pip -y
+      sudo $pack_manager python3.$(python3 -c 'import sys;print(sys.version_info[:][1])')-dev
     fi
     python3 -m venv ./cam_scam_venv
     sudo $pack_manager gcc
     printf "installing requirements..."
-    ./cam_scam_venv/bin/pip3 install -r ./requirements.txt
+    ./cam_scam_venv/bin/python3 -m pip install -r ./requirements.txt
+    if [ $experiment == true ]; then
+      ./cam_scam_venv/bin/python3 -m pip install -r ./optional.txt;
     mkdir logs
 fi
