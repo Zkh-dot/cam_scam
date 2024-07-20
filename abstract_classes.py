@@ -10,3 +10,10 @@ class devices:
 
     def release(self):
         self.__del__()
+
+class device:
+    def stop_stream(self):
+        pass
+
+    def start_stream(self):
+        pass

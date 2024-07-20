@@ -5,7 +5,7 @@ import random
 from multiprocessing import Process
 import subprocess
 from time import sleep
-from devices_class import devices
+from abstract_classes import devices
 
 class MicroScam(devices):
 	def __init__(self, micid, noiseFile):

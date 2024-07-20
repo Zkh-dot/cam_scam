@@ -1,7 +1,7 @@
 from pynput.keyboard import Key, Listener
 from cam_connections import cam_scam
 from micro import MicroScam
-from devices_class import devices
+from abstract_classes import devices
 import sys
 
 class state_manager():
