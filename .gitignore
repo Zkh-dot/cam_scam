@@ -2,3 +2,5 @@ __pycache__
 test*
 logs/*
 cam_scam_venv
+pictures
+videos

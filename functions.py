@@ -1,6 +1,8 @@
 import cv2 
 import subprocess
 import glob
+import numpy as np
+import random
 
 def all_cameras_objects() -> list:
     return glob.glob('/dev/video*')
@@ -27,6 +29,26 @@ def show_cam_image(cap):
         cv2.imshow('frame', frame)
         if cv2.waitKey(1) == ord('q'):
             break
+
+
+def sp_noise(image: cv2.UMat, prob: float):
+    '''
+    Add salt and pepper noise to image
+    prob: Probability of the noise
+    '''
+    output = np.zeros(image.shape,np.uint8)
+    thres = 1 - prob 
+    for i in range(image.shape[0]):
+        for j in range(image.shape[1]):
+            rdn = random.random()
+            if rdn < prob:
+                output[i][j] = 0
+            elif rdn > thres:
+                output[i][j] = 255
+            else:
+                output[i][j] = image[i][j]
+    
+    return output
 
 
 if __name__ == '__main__':

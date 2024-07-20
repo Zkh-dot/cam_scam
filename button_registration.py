@@ -5,10 +5,10 @@ from devices_class import devices
 import sys
 
 class state_manager():
-    def __init__(self, button='f12', devices="all", mic_id=None, audio_file=None):
+    def __init__(self, button='f12', devices="all", mic_id=None, audio_file=None, noise_prob='0.05'):
         self.__devices = {}
         if devices == "all":
-            self.__devices['cam'] = cam_scam()
+            self.__devices['cam'] = cam_scam(float(noise_prob))
             self.__devices['mic'] = MicroScam(mic_id, audio_file)
         elif devices == "mic":
             self.__devices['mic'] = MicroScam(mic_id, audio_file)

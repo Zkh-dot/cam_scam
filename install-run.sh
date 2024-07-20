@@ -9,6 +9,7 @@ install_flag=false
 experiment=false
 button="f12"
 only="all"
+noise_prob="0.05"
 
 # detect system packet manager
 declare -A osInfo;
@@ -27,7 +28,7 @@ if [ -z ${pack_manager+x} ]; then
 fi
 
 # get command line arguments
-while getopts 'irb:a:m:o:' OPTION; do
+while getopts 'irb:a:m:o:n:' OPTION; do
   case "$OPTION" in
     i)
       echo "running in installation mode"
@@ -55,6 +56,10 @@ while getopts 'irb:a:m:o:' OPTION; do
       echo "not stable features enabled"
       experiment=true
       ;;
+    n)
+      echo "noise probabuluty is set to $OPTARG"
+      noise_prob="$OPRARG"
+      ;;
     ?)
       printf "script usage: install-run.sh \n\t[-i] for installation \n\t[-r] for run\n\t[-e] to install version with not stable features\n\t[-b button] to set button\n\t[-a path] to set audo file\n\t[-m id] to set mic id\n\t[-o mic/video] to work only with mic or video\n" >&2
       exit 1
@@ -78,7 +83,7 @@ if [ -d "./cam_scam_venv" ] && [ $install_flag = false ]; then
     printf "audio file is set to $audio_file\n"
     printf "mic id is set to $mic_id\n"
     printf "activation button is set to $button\n"
-    ./cam_scam_venv/bin/python3 button_registration.py $button $only $mic_id $audio_file # > ./logs/logs.log
+    ./cam_scam_venv/bin/python3 button_registration.py $button $only $mic_id $audio_file $noise_prob # > ./logs/logs.log
 else
     printf "installing headers..."
     if [ "$pack_manager" == "pacman -S" ]; then
@@ -100,5 +105,7 @@ else
     if [ $experiment == true ]; then
       ./cam_scam_venv/bin/python3 -m pip install -r ./optional.txt
     fi
-    mkdir logs
+    mkdir -p logs
+    mkdir -p pictures
+    mkdir -p videos
 fi
