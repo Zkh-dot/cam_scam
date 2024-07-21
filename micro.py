@@ -8,8 +8,9 @@ from time import sleep
 from abstract_classes import devices
 
 class MicroScam(devices):
-	def __init__(self, micid, noiseFile):
+	def __init__(self, micid, noiseFile, delay=0):
 		self.micid = micid
+		self.__delay = delay
 		self.virtualname = 'Virtual' + ''.join(random.choices(string.ascii_uppercase, k=5))
 		print(f"RUN pactl load-module module-null-sink sink_name={self.virtualname}")
 		self.mainpid = str(subprocess.check_output(f"pactl load-module module-null-sink sink_name={self.virtualname}", shell=True), "UTF-8")
@@ -30,6 +31,7 @@ class MicroScam(devices):
 
 
 	def freeze(self):
+		sleep(self.__delay)
 		if self.pid:
 			os.system(f"pactl unload-module {self.pid}")
 			self.pid = None

@@ -5,15 +5,16 @@ from abstract_classes import devices
 import sys
 
 class state_manager():
-    def __init__(self, button='f12', devices="all", mic_id=None, audio_file=None, noise_prob='0.05'):
+    def __init__(self, button='f12', delay='0', devices="all", mic_id=None, audio_file=None, noise_prob='0.05'):
         self.__devices = {}
+
         if devices == "all":
-            self.__devices['cam'] = cam_scam(float(noise_prob))
-            self.__devices['mic'] = MicroScam(mic_id, audio_file)
+            self.__devices['cam'] = cam_scam(float(noise_prob), int(delay))
+            self.__devices['mic'] = MicroScam(mic_id, audio_file, int(delay))
         elif devices == "mic":
-            self.__devices['mic'] = MicroScam(mic_id, audio_file)
+            self.__devices['mic'] = MicroScam(mic_id, audio_file, int(delay))
         elif devices == "cam":
-            self.__devices['cam'] = cam_scam()
+            self.__devices['cam'] = cam_scam(float(noise_prob), int(delay))
         
         self.__cams_on = True
         self.__button = button

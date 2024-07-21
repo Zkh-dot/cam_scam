@@ -78,12 +78,13 @@ class camera(device):
         
 
 class cam_scam(devices):
-    def __init__(self, noise_prob=0.05):
+    def __init__(self, noise_prob=0.05, delay=0):
         subprocess.run(['sudo','modprobe', 'v4l2loopback', f'devices=0'], capture_output=True,text=True)#{','.join(self.virtual_cam_ids)}'])
         self.physical_cams = all_cameras_objects()
         self.delta = len(self.physical_cams)
         self.noise_prob = noise_prob
         self.im_quantity = 10
+        self.__delay = delay
 
         self.virtual_cam_ids = []
         self.virtual_cam_processes = []
@@ -152,6 +153,7 @@ class cam_scam(devices):
         self.virtual_cam_processes = temp_array
 
     def freeze(self):
+        sleep(self.__delay)
         self.picture_translation()
         self.video_translation()
 

@@ -28,7 +28,7 @@ if [ -z ${pack_manager+x} ]; then
 fi
 
 # get command line arguments
-while getopts 'irb:a:m:o:n:' OPTION; do
+while getopts 'irb:a:m:o:n:t:' OPTION; do
   case "$OPTION" in
     i)
       echo "running in installation mode"
@@ -60,8 +60,13 @@ while getopts 'irb:a:m:o:n:' OPTION; do
       echo "noise probabuluty is set to $OPTARG"
       noise_prob="$OPRARG"
       ;;
+
+    t)
+      echo "add delay for $OPTARG seconds"
+      delay="$OPTARG"
+      ;;
     ?)
-      printf "script usage: install-run.sh \n\t[-i] for installation \n\t[-r] for run\n\t[-e] to install version with not stable features\n\t[-b button] to set button\n\t[-a path] to set audo file\n\t[-m id] to set mic id\n\t[-o mic/video] to work only with mic or video\n" >&2
+      printf "script usage: install-run.sh \n\t[-i] for installation \n\t[-r] for run\n\t[-e] to install version with not stable features\n\t[-b button] to set button\n\t[-a path] to set audo file\n\t[-m id] to set mic id\n\t[-o mic/video] to work only with mic or video\n\t[-t seconds] to set time delay before pausing video\n" >&2
       exit 1
       ;;
   esac
@@ -83,7 +88,7 @@ if [ -d "./cam_scam_venv" ] && [ $install_flag = false ]; then
     printf "audio file is set to $audio_file\n"
     printf "mic id is set to $mic_id\n"
     printf "activation button is set to $button\n"
-    ./cam_scam_venv/bin/python3 button_registration.py $button $only $mic_id $audio_file $noise_prob # > ./logs/logs.log
+    ./cam_scam_venv/bin/python3 button_registration.py $button $delay $only $mic_id $audio_file $noise_prob # > ./logs/logs.log
 else
     printf "installing headers..."
     if [ "$pack_manager" == "pacman -S" ]; then
