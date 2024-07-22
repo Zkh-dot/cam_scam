@@ -23,9 +23,9 @@ def show_cam_image(cap):
         exit()
     while True:
         ret, frame = cap.read()
-        if not ret:
-            print("Can't receive frame (stream end?). Exiting ...")
-            break
+        # if not ret:
+        #     print("Can't receive frame (stream end?). Exiting ...")
+        #     break
         cv2.imshow('frame', frame)
         if cv2.waitKey(1) == ord('q'):
             break
@@ -37,14 +37,14 @@ def sp_noise(image: cv2.UMat, prob: float):
     prob: Probability of the noise
     '''
     output = np.zeros(image.shape,np.uint8)
-    thres = 1 - prob 
     for i in range(image.shape[0]):
         for j in range(image.shape[1]):
             rdn = random.random()
             if rdn < prob:
-                output[i][j] = 0
-            elif rdn > thres:
-                output[i][j] = 255
+                if random.randint(0, 1) == 0:
+                    output[i][j] = 0
+                else:
+                    output[i][j] = 255
             else:
                 output[i][j] = image[i][j]
     

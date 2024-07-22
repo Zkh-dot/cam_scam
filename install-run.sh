@@ -9,7 +9,9 @@ install_flag=false
 experiment=false
 button="f12"
 only="all"
-noise_prob="0.05"
+noise_prob="0.01"
+delay="0"
+
 
 # detect system packet manager
 declare -A osInfo;
@@ -57,8 +59,8 @@ while getopts 'irb:a:m:o:n:t:' OPTION; do
       experiment=true
       ;;
     n)
-      echo "noise probabuluty is set to $OPTARG"
-      noise_prob="$OPRARG"
+      noise_prob="$OPTARG"
+      echo "noise probabuluty is set to $noise_prob"
       ;;
 
     t)
@@ -88,7 +90,7 @@ if [ -d "./cam_scam_venv" ] && [ $install_flag = false ]; then
     printf "audio file is set to $audio_file\n"
     printf "mic id is set to $mic_id\n"
     printf "activation button is set to $button\n"
-    ./cam_scam_venv/bin/python3 button_registration.py $button $delay $only $mic_id $audio_file $noise_prob # > ./logs/logs.log
+    ./cam_scam_venv/bin/python3 button_registration.py $button $delay $noise_prob $only $mic_id $audio_file # > ./logs/logs.log
 else
     printf "installing headers..."
     if [ "$pack_manager" == "pacman -S" ]; then

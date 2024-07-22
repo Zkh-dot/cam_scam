@@ -4,6 +4,8 @@ import subprocess
 from time import sleep
 from abstract_classes import device, devices
 import sys
+import numpy as np
+import os
 
 class camera(device):
     def __init__(self, cam_id: int, delta: int):
@@ -77,8 +79,10 @@ class camera(device):
             print(e)
         
 
+# TODO: refactor using camera class
 class cam_scam(devices):
-    def __init__(self, noise_prob=0.05, delay=0):
+    def __init__(self, noise_prob=0.001, delay=0):
+        print("===== noise", noise_prob)
         subprocess.run(['sudo','modprobe', 'v4l2loopback', f'devices=0'], capture_output=True,text=True)#{','.join(self.virtual_cam_ids)}'])
         self.physical_cams = all_cameras_objects()
         self.delta = len(self.physical_cams)
@@ -105,18 +109,23 @@ class cam_scam(devices):
 
     def picture_translation(self):
         temp_array = []
+        
         for i, pr in enumerate(self.virtual_cam_processes):
+            print(['kill', str(pr.pid)])
+            subprocess.run(['kill', str(pr.pid)])
             try:
-                msg, image = cv2.VideoCapture(self.delta + i).read()
+                msg, image = cv2.VideoCapture(i).read()
+                height, width, channels = image.shape
+                os.chdir('./pictures')
                 cv2.imwrite(f'./pictures/cam-{self.delta + i}.png', image)
-                image = sp_noise(image, self.noise_prob)
+                image = cv2.GaussianBlur(image, (int(height)-1,int(width)-1), self.noise_prob)
+                # image = cv2.imdecode(np.frombuffer(sp_noise(image, self.noise_prob), np.uint8), cv2.IMREAD_UNCHANGED)
                 cv2.imwrite(f'./pictures/cam-{self.delta + i}-n.png', image)
             except Exception as e:
                 print(f'---who cares about cam {self.delta + i}---')
                 print('---', e, 'in', e.__traceback__.tb_lineno, '---')
 
-            print(['kill', str(pr.pid)])
-            subprocess.run(['kill', str(pr.pid)])
+
             # TODO: doesnt work (i guess)
             temp_array.append(subprocess.Popen(['ffmpeg', '-i', f'./pictures/cam-{self.delta + i}-n.png', '-vcodec', 'rawvideo', '-pix_fmt', 'yuv420p', '-threads', '0', '-f', 'v4l2', f'/dev/video{i + self.delta}'], shell=False))
         self.virtual_cam_processes = temp_array
@@ -150,6 +159,7 @@ class cam_scam(devices):
                 subprocess.run(['kill', str(self.virtual_cam_processes[i].pid)])
             print(['ffmpeg', '-i', f'/dev/video{i}', '-vcodec', 'rawvideo', '-pix_fmt', 'yuv420p', '-threads', '0', '-f', 'v4l2', f'/dev/video{i + self.delta}'])
             temp_array.append(subprocess.Popen(['ffmpeg', '-i', f'/dev/video{i}', '-vcodec', 'rawvideo', '-pix_fmt', 'yuv420p', '-threads', '0', '-f', 'v4l2', f'/dev/video{i + self.delta}'], shell=False))
+            subprocess.run(['sudo', 'rm', '-rf' './pictures/*'])
         self.virtual_cam_processes = temp_array
 
     def freeze(self):
