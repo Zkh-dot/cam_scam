@@ -90,6 +90,7 @@ if [ -d "./cam_scam_venv" ] && [ $install_flag = false ]; then
     printf "audio file is set to $audio_file\n"
     printf "mic id is set to $mic_id\n"
     printf "activation button is set to $button\n"
+    ./cam_scam_venv/bin/python3 -m pip install -r ./requirements.txt
     ./cam_scam_venv/bin/python3 button_registration.py $button $delay $noise_prob $only $mic_id $audio_file # > ./logs/logs.log
 else
     printf "installing headers..."
