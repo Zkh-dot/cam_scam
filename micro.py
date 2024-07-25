@@ -1,4 +1,5 @@
 # Author: Alexey Slokva <Alesha72003@ya.ru>
+# I (Alexey Slokva) resubmit this source file under license GPL v3. 25.07.2024
 import os
 import string
 import random
