@@ -1,5 +1,5 @@
 from pynput.keyboard import Key, Listener
-from cam_connections import cam_scam
+from cam_connections import new_cam_scam as cam_scam
 from micro import MicroScam
 from abstract_classes import devices
 import sys
@@ -7,7 +7,6 @@ import sys
 class state_manager():
     def __init__(self, button='f12', delay='0', noise_prob='0.05', devices="all", mic_id=None, audio_file=None):
         self.__devices = {}
-        print(33333, {**locals()} )
         if devices == "all":
             self.__devices['cam'] = cam_scam(float(noise_prob), int(delay))
             self.__devices['mic'] = MicroScam(mic_id, audio_file, int(delay))

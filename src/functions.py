@@ -4,7 +4,7 @@ import glob
 import numpy as np
 import random
 
-def all_cameras_objects() -> list:
+def all_cam_names() -> list:
     return glob.glob('/dev/video*')
 
 def get_picture(cam, index):
