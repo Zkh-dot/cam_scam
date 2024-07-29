@@ -4,9 +4,17 @@ Currently supports arch-, ubuntu- and debian- based distributives. Works with an
 
 ## installation
 
-To install the program, run install-run.sh and enter all required values. Then run the command
+To install the program, run install-run.sh like 
+```bash 
+sudo ./install-run.sh -i
+```
 
+and enter all required values. Then run the command
+
+
+``` bash
 v4l2-ctl --list-devices
+```
 
 If it successfully lists available physical cameras, the installation was successful.
 
@@ -16,4 +24,6 @@ To run the program, FIRST connect all physical cameras and microphones, then re-
 
 You can see all options with 
 
+```bash
 ./install-run.sh -q
+```
