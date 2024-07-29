@@ -113,7 +113,7 @@ else
     if [ $experiment == true ]; then
       ./cam_scam_venv/bin/python3 -m pip install -r ./optional.txt
     fi
-    mkdir -p logs
-    mkdir -p pictures
-    mkdir -p videos
+    mkdir -p ./src/log
+    mkdir -p ./src/pictures
+    mkdir -p ./src/videos
 fi

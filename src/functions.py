@@ -4,7 +4,7 @@ import glob
 import numpy as np
 import random
 
-def all_cameras_objects() -> list:
+def all_cam_names() -> list:
     return glob.glob('/dev/video*')
 
 def get_picture(cam, index):
@@ -31,7 +31,7 @@ def show_cam_image(cap):
             break
 
 
-def sp_noise(image: cv2.UMat, prob: float):
+def sp_noise(image: cv2.UMat, prob: float = 0.001):
     '''
     Add salt and pepper noise to image
     prob: Probability of the noise
