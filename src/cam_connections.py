@@ -1,31 +1,36 @@
 import cv2
-from functions import *
 import subprocess
 from time import sleep
-from abstract_classes import device, devices
 import sys
 import numpy as np
 import os
 import re
+from abstract_classes import device, devices
+from functions import *
+from singleton_logger import Logger
+
+logger = Logger().get_logger()
 
 class camera(device):
-    def __init__(self, cam_id: int, delta: int):
+    def __init__(self, cam_id: int, delta: int, noise_prob: float):
         if not type(cam_id) == int or not  type(delta) == int:
             raise TypeError("not integer input to camera obj!")
         self.id = cam_id
         self.delta = delta
+        self.noise_prob = noise_prob
         self.current_stream = None
         self.current_stream_type = "None"
         # TODO: write blank funcs for _released objcts
         self._released = False
         subprocess.run(['sudo', 'v4l2loopback-ctl', 'add', f'video{id}'])
-
     
     def _stop_stream(self):
+        logger.info(f"camera {self.id} - stop stream")
         if self.current_stream:
             subprocess.run(['kill', str(self.current_stream.pid)])
 
     def _create_video(self):
+        logger.info(f"camera {self.id} - create video")
         print(f'video from cam {self.delta + self.id}')
         try:
             height, width, channels = self.image.shape
@@ -39,36 +44,44 @@ class camera(device):
             print(e)
 
     def _create_photo(self):
+        logger.info(f"camera {self.id} - create photo")
         try:
             self.image = cv2.VideoCapture(self.delta + self.id).read()[1]
+            logger.debug(f"camera {self.id} - image " + str(type(self.image)))
             cv2.imwrite(f'./pictures/cam-{self.delta + self.id}.png', self.image)
-            cv2.imwrite(f'./pictures/cam-{self.delta + self.id}-n.png', sp_noise(self.image))
-        except:
-            print(f'who cares about cam {self.delta + self.id}')
+            cv2.imwrite(f'./pictures/cam-{self.delta + self.id}-n.png', sp_noise(self.image, self.noise_prob))
+            logger.info("photoes created")
+        except Exception as e:
+            logger.error(f"camera {self.id} - {str(e)}, {__file__}, {e.__traceback__.tb_lineno} ---")
             self._released = True
 
     def _stream_camera(self):
+        logger.info(f"camera {self.id} - stream camera")
         self._stop_stream()
         self.current_stream_type = "camera"
         self.current_stream = subprocess.Popen(['ffmpeg', '-i', f'/dev/video{self.id}', '-vcodec', 'rawvideo', '-pix_fmt', 'yuv420p', '-threads', '0', '-f', 'v4l2', f'/dev/video{self.id + self.delta}'], shell=False)
     
     def _stream_picture(self):
+        logger.info(f"camera {self.id} - stream picture")
         self.current_stream_type = "picture"
         self._create_photo()
         self._stop_stream()
         self.current_stream = subprocess.Popen(['ffmpeg', '-i', f'./pictures/cam-{self.delta + self.id}-n.png', '-vcodec', 'rawvideo', '-pix_fmt', 'yuv420p', '-threads', '0', '-f', 'v4l2', f'/dev/video{self.id + self.delta}'], shell=False)
 
     def _stream_noisy_video(self):
+        logger.info(f"camera {self.id} - stream noisy video")
         self.current_stream_type = "video"
         self._create_video()
         self._stop_stream()
         self.current_stream = subprocess.Popen(['ffmpeg', '-stream_loop', '100000', '-i', f'./videos/cam-{self.delta + self.id}.mp4', '-filter:v', 'fps=1', '-map', '0:v','-f', 'v4l2', f'/dev/video{self.id + self.delta}'], shell=False)
 
     def freeze(self):
+        logger.info(f"camera {self.id} - freeze")
         self._stream_picture()
         self._stream_noisy_video()
 
     def unfreeze(self):
+        logger.info(f"camera {self.id} - unfreeze")
         self._stream_camera()
 
     def _release(self):
@@ -91,8 +104,9 @@ class new_cam_scam(devices):
     def __init__(self, noize_prob=0.001, delay=0) -> None:
         subprocess.run(['sudo','modprobe', 'v4l2loopback', f'devices=0'], capture_output=True,text=True)#{','.join(self.virtual_cam_ids)}'])
         self.physical_cam_names = all_cam_names()
+        self.delay = delay
         self.delta = len(self.physical_cam_names)
-        self.virtual_cams = [camera(int(re.match(r".*?video(\d*)", cam_name)[1]), self.delta) for cam_name in self.physical_cam_names]
+        self.virtual_cams = [camera(int(re.match(r".*?video(\d*)", cam_name)[1]), self.delta, noize_prob) for cam_name in self.physical_cam_names]
         self.unfreeze()
 
     def _freeze_all_cams(self):
@@ -104,9 +118,11 @@ class new_cam_scam(devices):
             self.virtual_cams[id].unfreeze()
 
     def freeze(self):
+        sleep(self.delay)
         self._freeze_all_cams()
 
     def unfreeze(self):
+        sleep(self.delay)
         self._unfreeze_all_cams()
 
     def _release(self):

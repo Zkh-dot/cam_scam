@@ -1,8 +1,13 @@
 from pynput.keyboard import Key, Listener
-from cam_connections import new_cam_scam as cam_scam
+import sys
+
 from micro import MicroScam
 from abstract_classes import devices
-import sys
+from cam_connections import new_cam_scam as cam_scam
+from singleton_logger import Logger
+
+logger = Logger().get_logger()
+
 
 class state_manager():
     def __init__(self, button='f12', delay='0', noise_prob='0.05', devices="all", mic_id=None, audio_file=None):
