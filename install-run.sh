@@ -90,8 +90,8 @@ if [ -d "./cam_scam_venv" ] && [ $install_flag = false ]; then
     printf "audio file is set to $audio_file\n"
     printf "mic id is set to $mic_id\n"
     printf "activation button is set to $button\n"
-    ./cam_scam_venv/bin/python3 -m pip install -r ./requirements.txt
-    ./cam_scam_venv/bin/python3 button_registration.py $button $delay $noise_prob $only $mic_id $audio_file # > ./logs/logs.log
+    ./cam_scam_venv/bin/python3 -m pip install -r ./dependencies/requirements.txt
+    ./cam_scam_venv/bin/python3 ./src/button_registration.py $button $delay $noise_prob $only $mic_id $audio_file # > ./logs/logs.log
 else
     printf "installing headers..."
     if [ "$pack_manager" == "pacman -S" ]; then
@@ -109,7 +109,7 @@ else
     python3 -m venv ./cam_scam_venv
     sudo $pack_manager gcc
     printf "installing requirements..."
-    ./cam_scam_venv/bin/python3 -m pip install -r ./requirements.txt
+    ./cam_scam_venv/bin/python3 -m pip install -r ./dependencies/requirements.txt
     if [ $experiment == true ]; then
       ./cam_scam_venv/bin/python3 -m pip install -r ./optional.txt
     fi

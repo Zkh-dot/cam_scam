@@ -23,16 +23,16 @@ class camera(device):
             subprocess.run(['kill', str(self.current_stream.pid)])
 
     def create_video(self):
-        print(f'video from cam {self.delta + i}')
+        print(f'video from cam {self.delta + self.id}')
         try:
             height, width, channels = self.image.shape
             video_format = cv2.VideoWriter_fourcc(*'mp4v')
-            video = cv2.VideoWriter(f'./videos/cam-{self.delta + i}.mp4', fourcc=video_format, fps=2, frameSize=(width, height))
+            video = cv2.VideoWriter(f'./videos/cam-{self.delta + self.id}.mp4', fourcc=video_format, fps=2, frameSize=(width, height))
             for ii in range(self.im_quantity):
                 video.write(sp_noise(self.image, self.noise_prob))
             video.release()
         except Exception as e:
-            print(f"who cares about video from cam {self.delta + i}")
+            print(f"who cares about video from cam {self.delta + self.id}")
             print(e)
 
     def create_photo(self):
@@ -68,10 +68,10 @@ class camera(device):
     def release(self):
         self.__del__()
 
-    def __del__(sefl):
+    def __del__(self):
         self.stop_all_streams()
         try:
-            print(' '.join(['sudo', 'v4l2loopback-ctl', 'delete', '/dev/video' + str(self.delta + i)]))
+            print(' '.join(['sudo', 'v4l2loopback-ctl', 'delete', '/dev/video' + str(self.delta + self.id)]))
             subprocess.run(['sudo', 'v4l2loopback-ctl', 'delete', '/dev/video' + str(self.delta + self.id)])
         except ImportError:
             pass
