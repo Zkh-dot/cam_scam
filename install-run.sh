@@ -9,7 +9,7 @@ install_flag=false
 experiment=false
 button="f12"
 only="all"
-noise_prob="0.01"
+noise_prob="0.00001"
 delay="0"
 
 

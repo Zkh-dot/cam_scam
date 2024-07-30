@@ -12,13 +12,14 @@ from singleton_logger import Logger
 logger = Logger().get_logger()
 
 class camera(device):
-    def __init__(self, cam_id: int, delta: int, noise_prob: float):
+    def __init__(self, cam_id: int, delta: int, noise_prob: float, im_quantity: int = 10):
         if not type(cam_id) == int or not  type(delta) == int:
             raise TypeError("not integer input to camera obj!")
         self.id = cam_id
         self.delta = delta
         self.noise_prob = noise_prob
         self.current_stream = None
+        self.im_quantity = im_quantity
         self.current_stream_type = "None"
         # TODO: write blank funcs for _released objcts
         self._released = False
@@ -31,49 +32,52 @@ class camera(device):
 
     def _create_video(self):
         logger.info(f"camera {self.id} - create video")
-        print(f'video from cam {self.delta + self.id}')
         try:
             height, width, channels = self.image.shape
             video_format = cv2.VideoWriter_fourcc(*'mp4v')
-            video = cv2.VideoWriter(f'./videos/cam-{self.delta + self.id}.mp4', fourcc=video_format, fps=2, frameSize=(width, height))
+            video = cv2.VideoWriter(f'./src/videos/cam-{self.delta + self.id}.mp4', fourcc=video_format, fps=1, frameSize=(width, height))
             for ii in range(self.im_quantity):
                 video.write(sp_noise(self.image, self.noise_prob))
             video._release()
+            logger.info(f"camera {self.id} - video created")
         except Exception as e:
-            print(f"who cares about video from cam {self.delta + self.id}")
-            print(e)
+            logger.error(f"camera {self.id} - {str(e)}, {__file__}, {e.__traceback__.tb_lineno} ---")
 
     def _create_photo(self):
         logger.info(f"camera {self.id} - create photo")
         try:
             self.image = cv2.VideoCapture(self.delta + self.id).read()[1]
             logger.debug(f"camera {self.id} - image " + str(type(self.image)))
-            cv2.imwrite(f'./pictures/cam-{self.delta + self.id}.png', self.image)
-            cv2.imwrite(f'./pictures/cam-{self.delta + self.id}-n.png', sp_noise(self.image, self.noise_prob))
-            logger.info("photoes created")
+            cv2.imwrite(f'./src/pictures/cam-{self.delta + self.id}.png', self.image)
+            cv2.imwrite(f'./src/pictures/cam-{self.delta + self.id}-n.png', sp_noise(self.image, self.noise_prob))
+            logger.info(f"photoes ./src/pictures/cam-{self.delta + self.id}.png created")
         except Exception as e:
             logger.error(f"camera {self.id} - {str(e)}, {__file__}, {e.__traceback__.tb_lineno} ---")
             self._released = True
 
     def _stream_camera(self):
         logger.info(f"camera {self.id} - stream camera")
-        self._stop_stream()
-        self.current_stream_type = "camera"
-        self.current_stream = subprocess.Popen(['ffmpeg', '-i', f'/dev/video{self.id}', '-vcodec', 'rawvideo', '-pix_fmt', 'yuv420p', '-threads', '0', '-f', 'v4l2', f'/dev/video{self.id + self.delta}'], shell=False)
-    
+        try:
+            self._stop_stream()
+            self.current_stream_type = "camera"
+            self.current_stream = subprocess.Popen(['ffmpeg', '-i', f'/dev/video{self.id}', '-vcodec', 'rawvideo', '-pix_fmt', 'yuv420p', '-threads', '0', '-f', 'v4l2', f'/dev/video{self.id + self.delta}'], shell=False)
+        except Exception as e:
+            logger.error(f"camera {self.id} - {str(e)}, {__file__}, {e.__traceback__.tb_lineno} ---")
+
+
     def _stream_picture(self):
         logger.info(f"camera {self.id} - stream picture")
         self.current_stream_type = "picture"
         self._create_photo()
         self._stop_stream()
-        self.current_stream = subprocess.Popen(['ffmpeg', '-i', f'./pictures/cam-{self.delta + self.id}-n.png', '-vcodec', 'rawvideo', '-pix_fmt', 'yuv420p', '-threads', '0', '-f', 'v4l2', f'/dev/video{self.id + self.delta}'], shell=False)
+        self.current_stream = subprocess.Popen(['ffmpeg', '-i', f'./src/pictures/cam-{self.delta + self.id}-n.png', '-vcodec', 'rawvideo', '-pix_fmt', 'yuv420p', '-threads', '0', '-f', 'v4l2', f'/dev/video{self.id + self.delta}'], shell=False)
 
     def _stream_noisy_video(self):
         logger.info(f"camera {self.id} - stream noisy video")
         self.current_stream_type = "video"
         self._create_video()
         self._stop_stream()
-        self.current_stream = subprocess.Popen(['ffmpeg', '-stream_loop', '100000', '-i', f'./videos/cam-{self.delta + self.id}.mp4', '-filter:v', 'fps=1', '-map', '0:v','-f', 'v4l2', f'/dev/video{self.id + self.delta}'], shell=False)
+        self.current_stream = subprocess.Popen(['ffmpeg', '-stream_loop', '100000', '-i', f'./src/videos/cam-{self.delta + self.id}.mp4', '-filter:v', 'fps=1', '-map', '0:v','-f', 'v4l2', f'/dev/video{self.id + self.delta}'], shell=False)
 
     def freeze(self):
         logger.info(f"camera {self.id} - freeze")
@@ -172,18 +176,18 @@ class cam_scam(devices):
             try:
                 msg, image = cv2.VideoCapture(i).read()
                 height, width, channels = image.shape
-                os.chdir('./pictures')
-                cv2.imwrite(f'./pictures/cam-{self.delta + i}.png', image)
+                os.chdir('./src/pictures')
+                cv2.imwrite(f'./src/pictures/cam-{self.delta + i}.png', image)
                 image = cv2.GaussianBlur(image, (int(height)-1,int(width)-1), self.noise_prob)
                 # image = cv2.imdecode(np.frombuffer(sp_noise(image, self.noise_prob), np.uint8), cv2.IMREAD_UNCHANGED)
-                cv2.imwrite(f'./pictures/cam-{self.delta + i}-n.png', image)
+                cv2.imwrite(f'./src/pictures/cam-{self.delta + i}-n.png', image)
             except Exception as e:
                 print(f'---who cares about cam {self.delta + i}---')
                 print('---', e, 'in', e.__traceback__.tb_lineno, '---')
 
 
             # TODO: doesnt work (i guess)
-            temp_array.append(subprocess.Popen(['ffmpeg', '-i', f'./pictures/cam-{self.delta + i}-n.png', '-vcodec', 'rawvideo', '-pix_fmt', 'yuv420p', '-threads', '0', '-f', 'v4l2', f'/dev/video{i + self.delta}'], shell=False))
+            temp_array.append(subprocess.Popen(['ffmpeg', '-i', f'./src/pictures/cam-{self.delta + i}-n.png', '-vcodec', 'rawvideo', '-pix_fmt', 'yuv420p', '-threads', '0', '-f', 'v4l2', f'/dev/video{i + self.delta}'], shell=False))
         self.virtual_cam_processes = temp_array
 
     def video_translation(self):
@@ -191,17 +195,17 @@ class cam_scam(devices):
         for i, pr in enumerate(self.virtual_cam_processes):
             print(f'video from cam {self.delta + i}')
             try:
-                image = cv2.imread(f'./pictures/cam-{self.delta + i}.png')
+                image = cv2.imread(f'./src/pictures/cam-{self.delta + i}.png')
                 height, width, channels = image.shape
                 video_format = cv2.VideoWriter_fourcc(*'mp4v')
-                video = cv2.VideoWriter(f'./videos/cam-{self.delta + i}.mp4', fourcc=video_format, fps=2, frameSize=(width, height))
+                video = cv2.VideoWriter(f'./src/videos/cam-{self.delta + i}.mp4', fourcc=video_format, fps=2, frameSize=(width, height))
                 for ii in range(self.im_quantity):
                     video.write(sp_noise(image, self.noise_prob))
                 video._release()
 
                 print(['kill', str(pr.pid)])
                 subprocess.run(['kill', str(pr.pid)])
-                temp_array.append(subprocess.Popen(['ffmpeg', '-stream_loop', '100000', '-i', f'./videos/cam-{self.delta + i}.mp4', '-filter:v', 'fps=1', '-map', '0:v','-f', 'v4l2', f'/dev/video{i + self.delta}'], shell=False))
+                temp_array.append(subprocess.Popen(['ffmpeg', '-stream_loop', '100000', '-i', f'./src/videos/cam-{self.delta + i}.mp4', '-filter:v', 'fps=1', '-map', '0:v','-f', 'v4l2', f'/dev/video{i + self.delta}'], shell=False))
             except Exception as e:
                 print(f"who cares about video from cam {self.delta + i}")
                 print(e)
@@ -215,7 +219,7 @@ class cam_scam(devices):
                 subprocess.run(['kill', str(self.virtual_cam_processes[i].pid)])
             print(['ffmpeg', '-i', f'/dev/video{i}', '-vcodec', 'rawvideo', '-pix_fmt', 'yuv420p', '-threads', '0', '-f', 'v4l2', f'/dev/video{i + self.delta}'])
             temp_array.append(subprocess.Popen(['ffmpeg', '-i', f'/dev/video{i}', '-vcodec', 'rawvideo', '-pix_fmt', 'yuv420p', '-threads', '0', '-f', 'v4l2', f'/dev/video{i + self.delta}'], shell=False))
-            subprocess.run(['sudo', 'rm', '-rf' './pictures/*'])
+            subprocess.run(['sudo', 'rm', '-rf' './src/pictures/*'])
         self.virtual_cam_processes = temp_array
 
     def freeze(self):
