@@ -1,0 +1,3 @@
+2024-11-06 00:29:00,867 	 [INFO | cam_connections.py:84] > camera 0 - unfreeze
+2024-11-06 00:29:00,868 	 [INFO | cam_connections.py:59] > camera 0 - stream camera
+2024-11-06 00:29:00,869 	 [INFO | cam_connections.py:28] > camera 0 - stop stream

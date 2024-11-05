@@ -4,3 +4,4 @@ log/*
 cam_scam_venv
 pictures
 videos
+*.wav
